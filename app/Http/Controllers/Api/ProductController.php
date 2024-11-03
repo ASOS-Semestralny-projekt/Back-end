@@ -28,7 +28,7 @@ class ProductController extends Controller
 
     public function getByCategory($categoryId): JsonResponse
     {
-        $products = Product::where('category', $categoryId)->get();
+        $products = Product::where('category_id', $categoryId)->get();
         return response()->json($products);
     }
 
