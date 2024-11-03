@@ -10,11 +10,13 @@ class Product extends Model
 
     protected $fillable = [
         'name',
-        'description',
-        'category',
+        'category_id',
+        'category_name',
+        'img_path',
+        'short_description',
+        'long_description',
         'price',
-        'quantity',
-        'image'
+        'stock'
     ];
 
     public static function create(array $array): Product

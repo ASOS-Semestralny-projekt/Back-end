@@ -15,8 +15,9 @@ class ProductController extends Controller
         if ($request->has('search')) {
             $search = $request->input('search');
             $query->where('name', 'like', "%{$search}%")
-                ->orWhere('description', 'like', "%{$search}%")
-                ->orWhere('category', 'like', "%{$search}%");
+                ->orWhere('short_description', 'like', "%{$search}%")
+                ->orWhere('long_description', 'like', "%{$search}%")
+                ->orWhere('category_name', 'like', "%{$search}%");
         }
 
         $products = $query->get();
@@ -27,22 +28,25 @@ class ProductController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'description' => 'required|string',
-            'category' => 'required|integer',
+            'category_id' => 'required|integer',
+            'category_name' => 'required|integer',
+            'image_path' => 'nullable|image|max:2048',
+            'short_description' => 'string',
+            'long_description' => 'string',
             'price' => 'required|numeric',
-            'quantity' => 'required|integer',
-            'image' => 'nullable|image|max:2048',
-        ]);
+            'stock' => 'required|integer',
 
-        $imagePath = $request->file('image') ? $request->file('image')->store('products', 'public') : null;
+        ]);
 
         Product::create([
             'name' => $request->name,
-            'description' => $request->description,
-            'category' => $request->category,
+            'category_id' => $request->category_id,
+            'category_name' => $request->category_name,
+            'image_path' => $request->image_path,
+            'short_description' => $request->short_description,
+            'long_description' => $request->long_description,
             'price' => $request->price,
-            'quantity' => $request->quantity,
-            'image' => $imagePath,
+            'stock' => $request->stock,
         ]);
 
         return response()->json(['message' => 'Product created successfully']);
