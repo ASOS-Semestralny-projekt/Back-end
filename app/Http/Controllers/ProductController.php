@@ -23,6 +23,13 @@ class ProductController extends Controller
 
         return response()->json($products);
     }
+
+    public function getByCategory($categoryId): JsonResponse
+    {
+        $products = Product::where('category', $categoryId)->get();
+        return response()->json($products);
+    }
+
     public function store(Request $request): JsonResponse
     {
         $request->validate([

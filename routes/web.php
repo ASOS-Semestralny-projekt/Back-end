@@ -10,3 +10,4 @@ Route::get('/', function () {
 
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/categories', [CategoryController::class, 'index']);
+Route::get('/products/{categoryId}', [ProductController::class, 'getByCategory']);
