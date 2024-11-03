@@ -30,4 +30,9 @@ class Product extends Model
     {
         return static::query()->where($column, $value);
     }
+
+    public static function find($productId)
+    {
+        return static::query()->find($productId);
+    }
 }

@@ -30,6 +30,17 @@ class ProductController extends Controller
         return response()->json($products);
     }
 
+    public function getById($productId): JsonResponse
+    {
+        $product = Product::find($productId);
+
+        if (!$product) {
+            return response()->json(['message' => 'Product not found'], 404);
+        }
+
+        return response()->json($product);
+    }
+
     public function store(Request $request): JsonResponse
     {
         $request->validate([
