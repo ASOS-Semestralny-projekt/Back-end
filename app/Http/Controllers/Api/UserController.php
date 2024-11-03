@@ -21,4 +21,14 @@ class UserController extends Controller
             'user' => auth()->user()
         ]);
     }
+
+    public function update(): JsonResponse
+    {
+        /** @var User $user */
+        $user = auth()->user();
+        $user->update(request()->all());
+        return response()->json([
+            'user' => $user
+        ]);
+    }
 }
