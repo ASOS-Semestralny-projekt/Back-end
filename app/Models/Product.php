@@ -25,4 +25,9 @@ class Product extends Model
 
         return $product;
     }
+
+    public static function where(string $column, $value)
+    {
+        return static::query()->where($column, $value);
+    }
 }
