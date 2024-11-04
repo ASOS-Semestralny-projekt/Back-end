@@ -15,33 +15,70 @@ class UserController extends Controller
     {
         return response()->json([
             'users' => User::all()
-        ]);
+        ])->setStatusCode(200);
     }
 
     public function show(): JsonResponse
     {
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'Please log in'
+            ])->setStatusCode(401);
+        }
+
         return response()->json([
-            'user' => auth()->user()
-        ]);
+            'user' => $user
+        ])->setStatusCode(200);
     }
 
     public function update(): JsonResponse
     {
         /** @var User $user */
         $user = auth()->user();
-        $user->update(request()->all());
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'Please log in'
+            ])->setStatusCode(401);
+        }
+
+        try {
+            request()->validate([
+                'first_name' => 'string',
+                'last_name' => 'string',
+                'street' => 'string',
+                'house_number' => 'string',
+                'city' => 'string',
+                'zip_code' => 'string',
+                'country' => 'string',
+                'email' => 'email',
+                'phone' => 'string',
+            ]);
+            $user->update(request()->all());
+        } catch (ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation failed.',
+                'errors' => $e->getMessage(),
+            ])->setStatusCode(400);
+        }
+
         return response()->json([
             'user' => $user
-        ]);
+        ])->setStatusCode(200);
     }
 
-    /**
-     * @throws ValidationException
-     */
     public function updatePassword(): JsonResponse
     {
         /** @var User $user */
         $user = auth()->user();
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'Please log in'
+            ])->setStatusCode(401);
+        }
 
         try {
             $data = request()->validate([
