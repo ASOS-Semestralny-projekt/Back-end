@@ -6,10 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
+use Illuminate\Validation\ValidationException;
 
 class RegisteredUserController extends Controller
 {
@@ -18,20 +19,27 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request): Response
+    public function store(Request $request): JsonResponse
     {
-        $request->validate([
-            'first_name' => ['required', 'string', 'max:255'],
-            'last_name' => ['required', 'string', 'max:255'],
-            'street' => ['required', 'string', 'max:255'],
-            'house_number' => ['required', 'string', 'max:255'],
-            'city' => ['required', 'string', 'max:255'],
-            'zip_code' => ['required', 'string', 'max:255'],
-            'country' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'phone' => ['required', 'string', 'max:255'],
-            'password' => ['required', Rules\Password::defaults()],
-        ]);
+        try {
+            $request->validate([
+                'first_name' => ['required', 'string', 'max:255'],
+                'last_name' => ['required', 'string', 'max:255'],
+                'street' => ['required', 'string', 'max:255'],
+                'house_number' => ['required', 'string', 'max:255'],
+                'city' => ['required', 'string', 'max:255'],
+                'zip_code' => ['required', 'string', 'max:255'],
+                'country' => ['required', 'string', 'max:255'],
+                'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+                'phone' => ['required', 'string', 'max:255'],
+                'password' => ['required', Rules\Password::defaults()],
+            ]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $e->getMessage(),
+            ])->setStatusCode(400);
+        }
 
         $user = User::create([
             'first_name' => $request->first_name,
@@ -50,6 +58,8 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return response()->noContent();
+        return response()->json([
+            'message' => 'Registration successful',
+        ])->setStatusCode(201);
     }
 }

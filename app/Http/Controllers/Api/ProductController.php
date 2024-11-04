@@ -23,13 +23,13 @@ class ProductController extends Controller
 
         $products = $query->get();
 
-        return response()->json($products);
+        return response()->json($products)->setStatusCode(200);
     }
 
     public function getByCategory($categoryId): JsonResponse
     {
         $products = Product::where('category_id', $categoryId)->get();
-        return response()->json($products);
+        return response()->json($products)->setStatusCode(200);
     }
 
     public function getById($productId): JsonResponse
@@ -40,7 +40,7 @@ class ProductController extends Controller
             return response()->json(['message' => 'Product not found'], 404);
         }
 
-        return response()->json($product);
+        return response()->json($product)->setStatusCode(200);
     }
 
     public function store(Request $request): JsonResponse
