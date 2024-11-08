@@ -19,4 +19,9 @@ class Category extends Model
         $category->save();
         return $category;
     }
+
+    public static function find($categoryId)
+    {
+        return static::query()->find($categoryId);
+    }
 }

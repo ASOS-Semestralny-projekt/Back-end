@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -29,7 +30,16 @@ class ProductController extends Controller
 
     public function getByCategory($categoryId): JsonResponse
     {
+        if(!Category::find($categoryId)) {
+            return response()->json([
+                'message' => 'No products found for this category',
+                'error' => 'Searched category does not exist'],
+                404);
+        }
+
         $products = Product::where('category_id', $categoryId)->get();
+        $products->makeHidden(['created_at', 'updated_at']);
+
         return response()->json($products)->setStatusCode(200);
     }
 
