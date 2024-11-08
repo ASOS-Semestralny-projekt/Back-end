@@ -11,13 +11,8 @@ class CategoryController extends Controller
     public function index(): JsonResponse
     {
         $categories = Category::all();
-        $categoryData = $categories->map(function ($category) {
-            return [
-                'id' => $category->id,
-                'name' => $category->name,
-            ];
-        });
+        $categories->makeHidden(['created_at', 'updated_at']);
 
-        return response()->json($categoryData)->setStatusCode(200);
+        return response()->json($categories)->setStatusCode(200);
     }
 }

@@ -22,6 +22,7 @@ class ProductController extends Controller
         }
 
         $products = $query->get();
+        $products->makeHidden(['created_at', 'updated_at']);
 
         return response()->json($products)->setStatusCode(200);
     }
