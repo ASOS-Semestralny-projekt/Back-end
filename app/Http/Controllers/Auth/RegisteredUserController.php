@@ -36,7 +36,7 @@ class RegisteredUserController extends Controller
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Validation failed',
+                'message' => 'Registration failed',
                 'errors' => $e->getMessage(),
             ])->setStatusCode(400);
         }
