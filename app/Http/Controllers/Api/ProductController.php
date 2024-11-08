@@ -48,8 +48,13 @@ class ProductController extends Controller
         $product = Product::find($productId);
 
         if (!$product) {
-            return response()->json(['message' => 'Product not found'], 404);
+            return response()->json([
+                'message' => 'Product not found',
+                'error' => 'Searched product does not exist'],
+                404);
         }
+
+        $product->makeHidden(['created_at', 'updated_at']);
 
         return response()->json($product)->setStatusCode(200);
     }
