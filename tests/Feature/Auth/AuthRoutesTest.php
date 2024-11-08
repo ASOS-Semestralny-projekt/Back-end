@@ -31,6 +31,7 @@ class AuthRoutesTest extends TestCase
 
         $response = $this->postJson('/register', $userData);
 
+        $this->assertDatabaseHas('users', ['email' => 'example@example.com']);
         $response->assertStatus(201);
     }
 
