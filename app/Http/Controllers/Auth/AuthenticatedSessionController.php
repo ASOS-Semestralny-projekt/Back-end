@@ -17,8 +17,11 @@ class AuthenticatedSessionController extends Controller
     public function store(LoginRequest $request): JsonResponse
     {
         try {
+            if(auth()->user()){
+                throw new AuthenticationException('User already logged in');
+            }
             $request->authenticate();
-        } catch (AuthenticationException $e) {
+        } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Login failed',
                 'errors' => $e->getMessage(),
@@ -28,7 +31,10 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         return response()->json([
-            'message' => 'Login successful'
+            'session_token' => $request->session()->token(),
+            'user_id' => auth()->user()->id,
+            'first_name' => auth()->user()->first_name,
+            'last_name' => auth()->user()->last_name,
         ])->setStatusCode(200);
     }
 
@@ -41,7 +47,8 @@ class AuthenticatedSessionController extends Controller
 
         if (!$user) {
             return response()->json([
-                'message' => 'Please log in'
+                'message' => 'Logout failed',
+                'errors' => 'User not logged in'
             ])->setStatusCode(401);
         }
 

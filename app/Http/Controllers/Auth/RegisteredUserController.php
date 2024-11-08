@@ -34,7 +34,7 @@ class RegisteredUserController extends Controller
                 'phone' => ['required', 'string', 'max:255'],
                 'password' => ['required', Rules\Password::defaults()],
             ]);
-        } catch (ValidationException $e) {
+        } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Validation failed',
                 'errors' => $e->getMessage(),
