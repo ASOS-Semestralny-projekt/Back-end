@@ -13,7 +13,7 @@ class CategoryTest extends TestCase
      *
      * @return void
      */
-    public function test_get_categories_list()
+    public function test_get_categories_list_success()
     {
         $response = $this->getJson('/categories');
         $response->assertStatus(200);
