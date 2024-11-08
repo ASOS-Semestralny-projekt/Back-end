@@ -23,8 +23,6 @@ class ProductController extends Controller
         }
 
         $products = $query->get();
-        $products->makeHidden(['created_at', 'updated_at']);
-
         return response()->json($products)->setStatusCode(200);
     }
 
@@ -38,8 +36,6 @@ class ProductController extends Controller
         }
 
         $products = Product::where('category_id', $categoryId)->get();
-        $products->makeHidden(['created_at', 'updated_at']);
-
         return response()->json($products)->setStatusCode(200);
     }
 
@@ -53,9 +49,6 @@ class ProductController extends Controller
                 'error' => 'Searched product does not exist'],
                 404);
         }
-
-        $product->makeHidden(['created_at', 'updated_at']);
-
         return response()->json($product)->setStatusCode(200);
     }
 
