@@ -8,13 +8,14 @@ use Illuminate\Http\Request;
 class CheckUserLoggedIn
 {
     /**
-     * Handle an incoming request.
+     * Check if the user is logged in.
+     * If not, return a 401 response.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
+     * @param Request $request
+     * @param  Closure  $next
      * @return mixed
      */
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, Closure $next): mixed
     {
         $user = auth()->user();
 
