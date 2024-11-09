@@ -196,6 +196,15 @@ class OrderTest extends TestCase
         $this->registerUser();
 
         Category::create(['name' => 'Category 1']);
+        Product::create([
+            'name' => 'Product 1',
+            'category_id' => 1,
+            'category_name' => 'Category 1',
+            'short_description' => 'Product 1 description',
+            'long_description' => 'Product 1 description',
+            'price' => 5.99,
+            'stock' => 23
+        ]);
 
         $orderData = [
             'customer' => [
