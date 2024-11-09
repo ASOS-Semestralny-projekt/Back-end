@@ -20,6 +20,11 @@ class Product extends Model
         'stock'
     ];
 
+    protected $hidden = [
+        'created_at',
+        'updated_at'
+    ];
+
     public static function create(array $array): Product
     {
         $product = new self();

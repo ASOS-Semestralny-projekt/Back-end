@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -22,12 +23,18 @@ class ProductController extends Controller
         }
 
         $products = $query->get();
-
         return response()->json($products)->setStatusCode(200);
     }
 
     public function getByCategory($categoryId): JsonResponse
     {
+        if(!Category::find($categoryId)) {
+            return response()->json([
+                'message' => 'No products found for this category',
+                'error' => 'Searched category does not exist'],
+                404);
+        }
+
         $products = Product::where('category_id', $categoryId)->get();
         return response()->json($products)->setStatusCode(200);
     }
@@ -37,9 +44,11 @@ class ProductController extends Controller
         $product = Product::find($productId);
 
         if (!$product) {
-            return response()->json(['message' => 'Product not found'], 404);
+            return response()->json([
+                'message' => 'Product not found',
+                'error' => 'Searched product does not exist'],
+                404);
         }
-
         return response()->json($product)->setStatusCode(200);
     }
 

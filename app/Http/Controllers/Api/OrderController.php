@@ -16,14 +16,14 @@ class OrderController extends Controller
 
         if (!$user) {
             return response()->json([
-                'message' => 'Please log in'
+                'message' => 'Order failed',
+                'errors' => 'User not logged in'
             ])->setStatusCode(401);
         }
 
-        $totalPrice = $request->input('total_price');
-
-
         try {
+            $totalPrice = $request->input('total_price');
+
             $data = $request->validate([
                 'productsInOrder' => ['required', 'array', new ValidOrder($totalPrice)],
                 'productsInOrder.*.id' => 'required|integer',
@@ -31,9 +31,10 @@ class OrderController extends Controller
                 'productsInOrder.*.price' => 'required|numeric|min:0',
                 'total_price' => 'required|numeric|min:0',
             ]);
-        } catch (ValidationException $e) {
+        } catch (\Exception $e) {
             return response()->json([
-                'message' => $e->errors()
+                'message' => 'Order failed',
+                'errors' => $e->getMessage(),
             ])->setStatusCode(409);
         }
 
@@ -53,7 +54,8 @@ class OrderController extends Controller
             }
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'An error occurred while placing the order'
+                'message' => 'Order failed',
+                'errors' => $e->getMessage(),
             ])->setStatusCode(500);
         }
 
@@ -66,7 +68,8 @@ class OrderController extends Controller
 
         if (!$user) {
             return response()->json([
-                'message' => 'Please log in'
+                'message' => 'Data retrieval failed',
+                'errors' => 'User not logged in'
             ])->setStatusCode(401);
         }
 
