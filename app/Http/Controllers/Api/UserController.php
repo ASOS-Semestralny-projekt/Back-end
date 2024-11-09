@@ -45,7 +45,7 @@ class UserController extends Controller
         }
 
         try {
-            request()->validate([
+            $validatedData = request()->validate([
                 'first_name' => 'string',
                 'last_name' => 'string',
                 'street' => 'string',
@@ -55,7 +55,7 @@ class UserController extends Controller
                 'country' => 'string',
                 'phone' => 'string',
             ]);
-            $user->update(request()->all());
+            $user->update($validatedData);
         } catch (ValidationException $e) {
             return response()->json([
                 'message' => 'Validation failed.',
