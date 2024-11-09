@@ -5,11 +5,21 @@ namespace Tests\Feature\Api;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class ProductTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Reset auto-increment IDs for tables
+        DB::statement('ALTER TABLE categories AUTO_INCREMENT = 1');
+        DB::statement('ALTER TABLE products AUTO_INCREMENT = 1');
+    }
 
     /**
      * Test get products list success.
@@ -83,7 +93,7 @@ class ProductTest extends TestCase
         ];
         Product::create($productData);
 
-        $response = $this->getJson('/products/2');
+        $response = $this->getJson('/products/1');
         $response->assertStatus(200);
     }
 
@@ -99,7 +109,7 @@ class ProductTest extends TestCase
         ];
         Category::create($categoryData);
 
-        $response = $this->getJson('/products/3');
+        $response = $this->getJson('/products/1');
         $response->assertStatus(200);
     }
 
