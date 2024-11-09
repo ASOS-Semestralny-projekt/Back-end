@@ -13,15 +13,27 @@ class CategorySeeder extends Seeder
     public function run(): void
     {
         Category::create([
-            'name' => 'Phones',
+            'name' => 'Mobily',
         ]);
 
         Category::create([
-            'name' => 'Laptops',
+            'name' => 'Notebooky',
         ]);
 
         Category::create([
-            'name' => 'Printers',
+            'name' => 'Tlačiarne',
+        ]);
+
+        Category::create([
+            'name' => 'Monitory',
+        ]);
+
+        Category::create([
+            'name' => 'Televízory',
+        ]);
+
+        Category::create([
+            'name' => 'Príslušenstvo',
         ]);
     }
 }
