@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Rules\ValidOrder;
+use Exception;
 use Illuminate\Http\Request;
-use \Illuminate\Http\JsonResponse;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
@@ -18,6 +20,8 @@ class OrderController extends Controller
      */
     public function placeOrder(Request $request): JsonResponse
     {
+        Log::info('Placing an order', ['user_id' => auth()->id()]);
+
         try {
             $totalPrice = $request->input('total_price');
 
@@ -28,7 +32,11 @@ class OrderController extends Controller
                 'productsInOrder.*.price' => 'required|numeric|min:0',
                 'total_price' => 'required|numeric|min:0',
             ]);
-        } catch (\Exception $e) {
+
+            Log::info('Order data validated successfully', ['data' => $data]);
+        } catch (Exception $e) {
+            Log::error('Order validation failed', ['error' => $e->getMessage()]);
+
             return response()->json([
                 'message' => 'Order failed',
                 'errors' => $e->getMessage(),
@@ -43,6 +51,8 @@ class OrderController extends Controller
                 'total_price' => $data['total_price'],
             ]);
 
+            Log::info('Order created successfully', ['order_id' => $order->id]);
+
             // Map the products to the order in the order_products table
             foreach ($data['productsInOrder'] as $product) {
                 $order->products()->attach($product['id'], [
@@ -50,7 +60,11 @@ class OrderController extends Controller
                     'price' => $product['price'],
                 ]);
             }
-        } catch (\Exception $e) {
+
+            Log::info('Products attached to order', ['order_id' => $order->id, 'products' => $data['productsInOrder']]);
+        } catch (Exception $e) {
+            Log::error('Order creation failed', ['error' => $e->getMessage()]);
+
             return response()->json([
                 'message' => 'Order failed',
                 'errors' => $e->getMessage(),
@@ -69,7 +83,11 @@ class OrderController extends Controller
     {
         $user = auth()->user();
 
+        Log::info('Fetching orders for user', ['user_id' => auth()->id()]);
+
         $orders = $user->orders()->with('products')->get();
+
+        Log::info('Orders fetched successfully', ['orders_count' => $orders->count()]);
 
         return response()->json($orders->map(function ($order) {
             return [
