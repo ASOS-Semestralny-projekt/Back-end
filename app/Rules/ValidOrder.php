@@ -42,7 +42,7 @@ class ValidOrder implements ValidationRule
             if (!Product::find($productId)) {
                 throw ValidationException::withMessages([
                     $attribute => 'The product does not exist.'
-                ])->status(409);
+                ])->status(404);
             }
 
             $productModel = Product::find($productId);
