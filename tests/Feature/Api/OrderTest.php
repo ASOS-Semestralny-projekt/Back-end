@@ -2,12 +2,24 @@
 
 namespace Tests\Feature\Api;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Models\Category;
+use App\Models\Order;
+use App\Models\Product;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class OrderTest extends TestCase
 {
-    use RefreshDatabase;
+    private function refreshForTests(): void
+    {
+        Product::truncate();
+        Category::truncate();
+        User::truncate();
+        Order::truncate();
+        DB::statement('ALTER TABLE categories AUTO_INCREMENT = 1');
+        DB::statement('ALTER TABLE products AUTO_INCREMENT = 1');
+    }
 
     /**
      * Get sample user data.
@@ -47,6 +59,7 @@ class OrderTest extends TestCase
      */
     public function test_get_orders_list_success(): void
     {
+        $this->refreshForTests();
         $this->registerUser();
 
         $response = $this->getJson('/orders');
@@ -58,6 +71,7 @@ class OrderTest extends TestCase
      */
     public function test_get_orders_list_not_logged_in_error(): void
     {
+        $this->refreshForTests();
         $response = $this->getJson('/orders');
         $response->assertStatus(401);
     }

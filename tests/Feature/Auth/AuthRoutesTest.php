@@ -2,12 +2,24 @@
 
 namespace Tests\Feature\Auth;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Models\Category;
+use App\Models\Order;
+use App\Models\Product;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class AuthRoutesTest extends TestCase
 {
-    use RefreshDatabase;
+    private function refreshForTests(): void
+    {
+        Product::truncate();
+        Category::truncate();
+        User::truncate();
+        Order::truncate();
+        DB::statement('ALTER TABLE categories AUTO_INCREMENT = 1');
+        DB::statement('ALTER TABLE products AUTO_INCREMENT = 1');
+    }
 
     /**
      * Get sample user data.
@@ -54,6 +66,7 @@ class AuthRoutesTest extends TestCase
 
     public function test_register_user_success()
     {
+        $this->refreshForTests();
         $response = $this->registerUser();
 
         $this->assertDatabaseHas('users', ['email' => 'example@example.com']);
@@ -62,12 +75,14 @@ class AuthRoutesTest extends TestCase
 
     public function test_register_user_weak_password_error()
     {
+        $this->refreshForTests();
         $response = $this->registerUser(['password' => 'short']);
         $response->assertStatus(400);
     }
 
     public function test_register_user_email_exists_error()
     {
+        $this->refreshForTests();
         $this->registerUser();
         $response = $this->registerUser();
         $response->assertStatus(400);
@@ -75,12 +90,14 @@ class AuthRoutesTest extends TestCase
 
     public function test_register_user_missing_required_field_error()
     {
+        $this->refreshForTests();
         $response = $this->registerUser(['email' => null]);
         $response->assertStatus(400);
     }
 
     public function test_login_user_success()
     {
+        $this->refreshForTests();
         $this->registerUser();
         $this->logoutUser();
 
@@ -94,6 +111,7 @@ class AuthRoutesTest extends TestCase
 
     public function test_login_user_wrong_password_error()
     {
+        $this->refreshForTests();
         $this->registerUser();
         $this->logoutUser();
 
@@ -107,6 +125,7 @@ class AuthRoutesTest extends TestCase
 
     public function test_login_user_wrong_email_error()
     {
+        $this->refreshForTests();
         $this->registerUser();
         $this->logoutUser();
 
@@ -120,6 +139,7 @@ class AuthRoutesTest extends TestCase
 
     public function test_login_user_already_logged_in_error()
     {
+        $this->refreshForTests();
         $this->registerUser();
         $this->logoutUser();
 
@@ -138,6 +158,7 @@ class AuthRoutesTest extends TestCase
 
     public function test_logout_user_success()
     {
+        $this->refreshForTests();
         $this->registerUser();
         $response = $this->logoutUser();
 
@@ -146,6 +167,7 @@ class AuthRoutesTest extends TestCase
 
     public function test_logout_user_not_logged_in_error()
     {
+        $this->refreshForTests();
         $response = $this->logoutUser();
         $response->assertStatus(401);
     }

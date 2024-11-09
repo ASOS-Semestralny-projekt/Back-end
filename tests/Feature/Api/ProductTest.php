@@ -3,21 +3,33 @@
 namespace Tests\Feature\Api;
 
 use App\Models\Category;
+use App\Models\Order;
 use App\Models\Product;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class ProductTest extends TestCase
 {
-    use RefreshDatabase;
+    private function refreshForTests(): void
+    {
+        Product::truncate();
+        Category::truncate();
+        User::truncate();
+        Order::truncate();
+        DB::statement('ALTER TABLE categories AUTO_INCREMENT = 1');
+        DB::statement('ALTER TABLE products AUTO_INCREMENT = 1');
+    }
 
     public function test_get_products_list_success()
     {
+        $this->refreshForTests();
         $this->getJson('/products')->assertStatus(200);
     }
 
     public function test_get_product_by_id_success()
     {
+        $this->refreshForTests();
         Category::create(['name' => 'Category 1']);
         Product::create([
             'name' => 'Product 1',
@@ -34,11 +46,13 @@ class ProductTest extends TestCase
 
     public function test_get_product_by_id_not_found_error()
     {
-        $this->getJson('/product/567')->assertStatus(404);
+        $this->refreshForTests();
+        $this->getJson('/product/1')->assertStatus(404);
     }
 
     public function test_get_product_list_by_category_with_items_success()
     {
+        $this->refreshForTests();
         Category::create(['name' => 'Category 1']);
         Product::create([
             'name' => 'Product 1',
@@ -50,17 +64,19 @@ class ProductTest extends TestCase
             'stock' => 23
         ]);
 
-        $this->getJson('/products/2')->assertStatus(200);
+        $this->getJson('/products/1')->assertStatus(200);
     }
 
     public function test_get_product_list_by_category_without_items_success()
     {
+        $this->refreshForTests();
         Category::create(['name' => 'Category 1']);
-        $this->getJson('/products/3')->assertStatus(200);
+        $this->getJson('/products/1')->assertStatus(200);
     }
 
     public function test_get_product_list_by_category_not_found_error()
     {
-        $this->getJson('/products/567')->assertStatus(404);
+        $this->refreshForTests();
+        $this->getJson('/products/1')->assertStatus(404);
     }
 }
