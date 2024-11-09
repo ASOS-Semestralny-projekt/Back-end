@@ -9,6 +9,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class OrderController extends Controller
 {
@@ -37,10 +38,12 @@ class OrderController extends Controller
         } catch (Exception $e) {
             Log::error('Order validation failed', ['error' => $e->getMessage()]);
 
-            return response()->json([
-                'message' => 'Order failed',
-                'errors' => $e->getMessage(),
-            ])->setStatusCode(409);
+            if ($e instanceof ValidationException) {
+                return response()->json([
+                    'message' => 'Order failed',
+                    'errors' => $e->errors(),
+                ])->setStatusCode($e->status);
+            }
         }
 
         try {
