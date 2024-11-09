@@ -85,4 +85,24 @@ class Product extends Model
     {
         return $this->belongsToMany(Order::class)->withPivot('quantity', 'price');
     }
+
+    /**
+     * Get the product.
+     *
+     * @return Product
+     */
+    public function get(): static
+    {
+        return $this;
+    }
+
+    /**
+     * Get the number of products.
+     *
+     * @return int
+     */
+    public function count(): int
+    {
+        return $this->count();
+    }
 }
