@@ -3,20 +3,21 @@
 namespace Tests\Feature\Api;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class UserTest extends TestCase
 {
-
     use RefreshDatabase;
 
     /**
-     * Test get user success.
+     * Get sample user data.
+     *
+     * @param array $overrides
+     * @return array
      */
-    public function test_get_user_success(): void
+    private function getUserData(array $overrides = []): array
     {
-        $userData = [
+        return array_merge([
             'first_name' => 'Jožko',
             'last_name' => 'Mrkvička',
             'street' => 'Ilkovičova',
@@ -26,10 +27,27 @@ class UserTest extends TestCase
             'country' => 'Slovensko',
             'email' => 'example@example.com',
             'phone' => '421914567890',
-            'password' => 'password'
-        ];
+            'password' => 'password',
+        ], $overrides);
+    }
 
-        $response = $this->postJson('/register', $userData);
+    /**
+     * Register a user.
+     *
+     * @param array $overrides
+     * @return \Illuminate\Testing\TestResponse
+     */
+    private function registerUser(array $overrides = [])
+    {
+        return $this->postJson('/register', $this->getUserData($overrides));
+    }
+
+    /**
+     * Test get user success.
+     */
+    public function test_get_user_success(): void
+    {
+        $this->registerUser();
         $response = $this->getJson('/user');
         $response->assertStatus(200);
     }

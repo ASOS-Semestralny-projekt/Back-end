@@ -10,13 +10,14 @@ class AuthRoutesTest extends TestCase
     use RefreshDatabase;
 
     /**
-     * Test user registration success.
+     * Get sample user data.
      *
-     * @return void
+     * @param array $overrides
+     * @return array
      */
-    public function test_register_user_success()
+    private function getUserData(array $overrides = []): array
     {
-        $userData = [
+        return array_merge([
             'first_name' => 'Jožko',
             'last_name' => 'Mrkvička',
             'street' => 'Ilkovičova',
@@ -26,241 +27,126 @@ class AuthRoutesTest extends TestCase
             'country' => 'Slovensko',
             'email' => 'example@example.com',
             'phone' => '421914567890',
-            'password' => 'password'
-        ];
+            'password' => 'password',
+        ], $overrides);
+    }
 
-        $response = $this->postJson('/register', $userData);
+    /**
+     * Register a user.
+     *
+     * @param array $overrides
+     * @return \Illuminate\Testing\TestResponse
+     */
+    private function registerUser(array $overrides = [])
+    {
+        return $this->postJson('/register', $this->getUserData($overrides));
+    }
+
+    /**
+     * Logout a user.
+     *
+     * @return \Illuminate\Testing\TestResponse
+     */
+    private function logoutUser()
+    {
+        return $this->getJson('/logout');
+    }
+
+    public function test_register_user_success()
+    {
+        $response = $this->registerUser();
 
         $this->assertDatabaseHas('users', ['email' => 'example@example.com']);
         $response->assertStatus(201);
     }
 
-    /**
-     * Test user registration failure (validation error).
-     *
-     * @return void
-     */
     public function test_register_user_weak_password_error()
     {
-        $userData = [
-            'first_name' => 'Jožko',
-            'last_name' => 'Mrkvička',
-            'street' => 'Ilkovičova',
-            'house_number' => '11B',
-            'city' => 'Bratislava',
-            'zip_code' => '82103',
-            'country' => 'Slovensko',
-            'email' => 'example@example.com',
-            'phone' => '421914567890',
-            'password' => 'short'
-        ];
-
-        $response = $this->postJson('/register', $userData);
-
+        $response = $this->registerUser(['password' => 'short']);
         $response->assertStatus(400);
     }
 
-    /**
-     * Test user register failure (email already exists).
-     *
-     * @return void
-     */
     public function test_register_user_email_exists_error()
     {
-        $userData = [
-            'first_name' => 'Jožko',
-            'last_name' => 'Mrkvička',
-            'street' => 'Ilkovičova',
-            'house_number' => '11B',
-            'city' => 'Bratislava',
-            'zip_code' => '82103',
-            'country' => 'Slovensko',
-            'email' => 'example@example.com',
-            'phone' => '421914567890',
-            'password' => 'password'
-        ];
-
-        $this->postJson('/register', $userData);
-
-        $response = $this->postJson('/register', $userData);
-
+        $this->registerUser();
+        $response = $this->registerUser();
         $response->assertStatus(400);
     }
 
-    /**
-     * Test user register failure (missing required field).
-     *
-     * @return void
-     */
     public function test_register_user_missing_required_field_error()
     {
-        $userData = [
-            'first_name' => 'Jožko',
-            'last_name' => 'Mrkvička',
-            'street' => 'Ilkovičova',
-            'house_number' => '11B',
-            'city' => 'Bratislava',
-            'zip_code' => '82103',
-            'country' => 'Slovensko'
-        ];
-
-        $this->postJson('/register', $userData)
-            ->assertStatus(400);
+        $response = $this->registerUser(['email' => null]);
+        $response->assertStatus(400);
     }
 
-    /**
-     * Test user login success.
-     *
-     * @return void
-     */
     public function test_login_user_success()
     {
-        $userData = [
-            'email' => 'example@example.com',
-            'password' => 'password'
-        ];
+        $this->registerUser();
+        $this->logoutUser();
 
-        $this->postJson('/register', [
-            'first_name' => 'Jožko',
-            'last_name' => 'Mrkvička',
-            'street' => 'Ilkovičova',
-            'house_number' => '11B',
-            'city' => 'Bratislava',
-            'zip_code' => '82103',
-            'country' => 'Slovensko',
+        $response = $this->postJson('/login', [
             'email' => 'example@example.com',
-            'phone' => '421914567890',
-            'password' => 'password'
+            'password' => 'password',
         ]);
 
-        $response = $this->getJson('/logout');
-        $response = $this->postJson('/login', $userData);
         $response->assertStatus(200);
     }
 
-    /**
-     * Test user login failure (wrong password).
-     *
-     * @return void
-     */
     public function test_login_user_wrong_password_error()
     {
-        $userData = [
-            'email' => 'example@example.com',
-            'password' => 'asdf'
-        ];
+        $this->registerUser();
+        $this->logoutUser();
 
-        $this->postJson('/register', [
-            'first_name' => 'Jožko',
-            'last_name' => 'Mrkvička',
-            'street' => 'Ilkovičova',
-            'house_number' => '11B',
-            'city' => 'Bratislava',
-            'zip_code' => '82103',
-            'country' => 'Slovensko',
+        $response = $this->postJson('/login', [
             'email' => 'example@example.com',
-            'phone' => '421914567890',
-            'password' => 'password'
+            'password' => 'wrongpassword',
         ]);
 
-        $response = $this->getJson('/logout');
-        $response = $this->postJson('/login', $userData);
         $response->assertStatus(400);
     }
 
-    /**
-     * Test user login failure (wrong email).
-     *
-     * @return void
-     */
     public function test_login_user_wrong_email_error()
     {
-        $userData = [
-            'email' => 'wrongExample@example.com',
-            'password' => 'password'
-        ];
+        $this->registerUser();
+        $this->logoutUser();
 
-        $this->postJson('/register', [
-            'first_name' => 'Jožko',
-            'last_name' => 'Mrkvička',
-            'street' => 'Ilkovičova',
-            'house_number' => '11B',
-            'city' => 'Bratislava',
-            'zip_code' => '82103',
-            'country' => 'Slovensko',
-            'email' => 'example@example.com',
-            'phone' => '421914567890',
-            'password' => 'password'
+        $response = $this->postJson('/login', [
+            'email' => 'wrong@example.com',
+            'password' => 'password',
         ]);
 
-        $response = $this->getJson('/logout');
-        $response = $this->postJson('/login', $userData);
         $response->assertStatus(400);
     }
 
-    /**
-     * Test user login failure (user already logged in).
-     *
-     * @return void
-     */
     public function test_login_user_already_logged_in_error()
     {
-        $userData = [
-            'email' => 'example@example.com',
-            'password' => 'password'
-        ];
+        $this->registerUser();
+        $this->logoutUser();
 
-        $this->postJson('/register', [
-            'first_name' => 'Jožko',
-            'last_name' => 'Mrkvička',
-            'street' => 'Ilkovičova',
-            'house_number' => '11B',
-            'city' => 'Bratislava',
-            'zip_code' => '82103',
-            'country' => 'Slovensko',
+        $this->postJson('/login', [
             'email' => 'example@example.com',
-            'phone' => '421914567890',
-            'password' => 'password'
+            'password' => 'password',
         ]);
 
-        $response = $this->getJson('/logout');
-        $response = $this->postJson('/login', $userData);
-        $response = $this->postJson('/login', $userData);
+        $response = $this->postJson('/login', [
+            'email' => 'example@example.com',
+            'password' => 'password',
+        ]);
+
         $response->assertStatus(400);
     }
 
-    /**
-     * Test user logout success.
-     *
-     * @return void
-     */
     public function test_logout_user_success()
     {
-        $this->postJson('/register', [
-            'first_name' => 'Jožko',
-            'last_name' => 'Mrkvička',
-            'street' => 'Ilkovičova',
-            'house_number' => '11B',
-            'city' => 'Bratislava',
-            'zip_code' => '82103',
-            'country' => 'Slovensko',
-            'email' => 'example@example.com',
-            'phone' => '421914567890',
-            'password' => 'password'
-        ]);
+        $this->registerUser();
+        $response = $this->logoutUser();
 
-        $response = $this->getJson('/logout');
         $response->assertStatus(200);
     }
 
-    /**
-     * Test user logout failure (user not logged in).
-     *
-     * @return void
-     */
     public function test_logout_user_not_logged_in_error()
     {
-        $response = $this->getJson('/logout');
+        $response = $this->logoutUser();
         $response->assertStatus(401);
     }
 }
