@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
@@ -39,9 +40,9 @@ class Product extends Model
      * Create a new product.
      *
      * @param array $array
-     * @return Product
+     * @return Product|null
      */
-    public static function create(array $array): Product
+    public static function create(array $array): ?Product
     {
         $product = new self();
         $product->fill($array);
@@ -55,9 +56,9 @@ class Product extends Model
      *
      * @param string $column
      * @param mixed $value
-     * @return Product
+     * @return Builder
      */
-    public static function where(string $column, mixed $value): Product
+    public static function where(string $column, mixed $value) : Builder
     {
         return static::query()->where($column, $value);
     }
@@ -66,9 +67,9 @@ class Product extends Model
      * Find a product by its ID.
      *
      * @param int $productId
-     * @return Product
+     * @return Product|null
      */
-    public static function find(int $productId): Product
+    public static function find(int $productId): ?Product
     {
         return static::query()->find($productId);
     }

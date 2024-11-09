@@ -31,9 +31,9 @@ class Category extends Model
      * Create a new category.
      *
      * @param array $array
-     * @return Category
+     * @return Category|null
      */
-    public static function create(array $array): Category
+    public static function create(array $array): ?Category
     {
         $category = new self();
         $category->fill($array);
@@ -46,9 +46,9 @@ class Category extends Model
      * Find a category by its ID.
      *
      * @param int $categoryId
-     * @return Category
+     * @return Category|null
      */
-    public static function find(int $categoryId): Category
+    public static function find(int $categoryId): ?Category
     {
         return static::query()->find($categoryId);
     }
