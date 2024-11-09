@@ -44,6 +44,11 @@ class Product extends Model
         return static::query()->find($productId);
     }
 
+    public static function truncate(): void
+    {
+        static::query()->delete();
+    }
+
     public function orders(): BelongsToMany
     {
         return $this->belongsToMany(Order::class)->withPivot('quantity', 'price');
