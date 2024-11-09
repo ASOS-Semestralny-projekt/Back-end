@@ -75,4 +75,152 @@ class OrderTest extends TestCase
         $response = $this->getJson('/orders');
         $response->assertStatus(401);
     }
+
+    public function test_create_order_success(): void
+    {
+        $this->refreshForTests();
+        $this->registerUser();
+
+        Category::create(['name' => 'Category 1']);
+        Product::create([
+            'name' => 'Product 1',
+            'category_id' => 1,
+            'category_name' => 'Category 1',
+            'short_description' => 'Product 1 description',
+            'long_description' => 'Product 1 description',
+            'price' => 10.99,
+            'stock' => 23
+        ]);
+
+        $orderData = [
+            'customer' => [
+                'first_name' => 'Jožko',
+                'last_name' => 'Mrkvička',
+                'street' => 'Ilkovičova',
+                'house_number' => '11B',
+                'city' => 'Bratislava',
+                'zip_code' => '82103',
+                'country' => 'Slovensko',
+                'email' => 'example@example.com',
+                'phone' => '421914567890'
+            ],
+            'productsInOrder' => [
+                [
+                    'id' => 1,
+                    'quantity' => 1,
+                    'price' => 10.99
+                ]
+            ],
+            'total_price' => 10.99
+        ];
+
+        $response = $this->postJson('/place-order', $orderData);
+        $response->assertStatus(201);
+    }
+
+    public function test_create_order_not_logged_in_error(): void
+    {
+        Category::create(['name' => 'Category 1']);
+        Product::create([
+            'name' => 'Product 1',
+            'category_id' => 1,
+            'category_name' => 'Category 1',
+            'short_description' => 'Product 1 description',
+            'long_description' => 'Product 1 description',
+            'price' => 10.99,
+            'stock' => 23
+        ]);
+
+        $orderData = [
+            'customer' => [
+                'first_name' => 'Jožko',
+                'last_name' => 'Mrkvička',
+                'street' => 'Ilkovičova',
+                'house_number' => '11B',
+                'city' => 'Bratislava',
+                'zip_code' => '82103',
+                'country' => 'Slovensko',
+                'email' => 'example@example.com',
+                'phone' => '421914567890'
+            ],
+            'productsInOrder' => [
+                [
+                    'id' => 1,
+                    'quantity' => 1,
+                    'price' => 10.99
+                ]
+            ],
+            'total_price' => 10.99
+        ];
+
+        $response = $this->postJson('/place-order', $orderData);
+        $response->assertStatus(401);
+    }
+
+    public function test_create_order_product_does_not_exist_error(): void
+    {
+        $this->refreshForTests();
+        $this->registerUser();
+
+        Category::create(['name' => 'Category 1']);
+
+        $orderData = [
+            'customer' => [
+                'first_name' => 'Jožko',
+                'last_name' => 'Mrkvička',
+                'street' => 'Ilkovičova',
+                'house_number' => '11B',
+                'city' => 'Bratislava',
+                'zip_code' => '82103',
+                'country' => 'Slovensko',
+                'email' => 'example@example.com',
+                'phone' => '421914567890'
+            ],
+            'productsInOrder' => [
+                [
+                    'id' => 1,
+                    'quantity' => 1,
+                    'price' => 10.99
+                ]
+            ],
+            'total_price' => 10.99
+        ];
+
+        $response = $this->postJson('/place-order', $orderData);
+        $response->assertStatus(404);
+    }
+
+    public function test_create_order_product_price_not_correct_error(): void
+    {
+        $this->refreshForTests();
+        $this->registerUser();
+
+        Category::create(['name' => 'Category 1']);
+
+        $orderData = [
+            'customer' => [
+                'first_name' => 'Jožko',
+                'last_name' => 'Mrkvička',
+                'street' => 'Ilkovičova',
+                'house_number' => '11B',
+                'city' => 'Bratislava',
+                'zip_code' => '82103',
+                'country' => 'Slovensko',
+                'email' => 'example@example.com',
+                'phone' => '421914567890'
+            ],
+            'productsInOrder' => [
+                [
+                    'id' => 1,
+                    'quantity' => 1,
+                    'price' => 10.99
+                ]
+            ],
+            'total_price' => 15.99
+        ];
+
+        $response = $this->postJson('/place-order', $orderData);
+        $response->assertStatus(409);
+    }
+
 }
