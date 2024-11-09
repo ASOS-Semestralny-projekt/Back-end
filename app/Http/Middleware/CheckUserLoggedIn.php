@@ -24,7 +24,6 @@ class CheckUserLoggedIn
                 'message' => 'Please log in'
             ])->setStatusCode(401);
         }
-
         return $next($request);
     }
 }
