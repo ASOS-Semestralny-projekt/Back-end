@@ -4,13 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use \Illuminate\Database\Eloquent\Relations\BelongsTo;
-use \Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Order extends Model
 {
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'user_id',
         'order_number',
@@ -19,7 +24,13 @@ class Order extends Model
         'total_price',
     ];
 
-    public static function create(array $attributes)
+    /**
+     * Create a new order.
+     *
+     * @param array $attributes
+     * @return Order
+     */
+    public static function create(array $attributes): Order
     {
         $order = new self();
         $order->user_id = $attributes['user_id'];
@@ -39,11 +50,21 @@ class Order extends Model
         return $order;
     }
 
+    /**
+     * Get the user that the order belongs to.
+     *
+     * @return BelongsTo
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * Get the products that belong to the order.
+     *
+     * @return BelongsToMany
+     */
     public function products(): BelongsToMany
     {
         return $this->belongsToMany(Product::class)->withPivot('quantity', 'price');

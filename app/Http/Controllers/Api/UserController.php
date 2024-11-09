@@ -11,6 +11,11 @@ use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
 {
+    /**
+     * Return all users.
+     *
+     * @return JsonResponse
+     */
     public function index(): JsonResponse
     {
         return response()->json([
@@ -18,6 +23,11 @@ class UserController extends Controller
         ])->setStatusCode(200);
     }
 
+    /**
+     * Return the authenticated user.
+     *
+     * @return JsonResponse
+     */
     public function show(): JsonResponse
     {
         $user = auth()->user();
@@ -27,6 +37,11 @@ class UserController extends Controller
         ])->setStatusCode(200);
     }
 
+    /**
+     * Update the authenticated user.
+     *
+     * @return JsonResponse
+     */
     public function update(): JsonResponse
     {
         /** @var User $user */
@@ -43,6 +58,7 @@ class UserController extends Controller
                 'country' => 'string',
                 'phone' => 'string',
             ]);
+
             $user->update($validatedData);
         } catch (ValidationException $e) {
             return response()->json([
@@ -56,6 +72,11 @@ class UserController extends Controller
         ])->setStatusCode(200);
     }
 
+    /**
+     * Update the authenticated user's password.
+     *
+     * @return JsonResponse
+     */
     public function updatePassword(): JsonResponse
     {
         /** @var User $user */

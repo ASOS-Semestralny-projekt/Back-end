@@ -6,11 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Rules\ValidOrder;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
+use \Illuminate\Http\JsonResponse;
 
 class OrderController extends Controller
 {
-    public function placeOrder(Request $request)
+    /**
+     * Place an order.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function placeOrder(Request $request): JsonResponse
     {
         try {
             $totalPrice = $request->input('total_price');
@@ -37,6 +43,7 @@ class OrderController extends Controller
                 'total_price' => $data['total_price'],
             ]);
 
+            // Map the products to the order in the order_products table
             foreach ($data['productsInOrder'] as $product) {
                 $order->products()->attach($product['id'], [
                     'quantity' => $product['quantity'],
@@ -53,7 +60,12 @@ class OrderController extends Controller
         return response()->json(['message' => 'Order placed successfully'], 201);
     }
 
-    public function getOrders()
+    /**
+     * Get all orders for the authenticated user.
+     *
+     * @return JsonResponse
+     */
+    public function getOrders(): JsonResponse
     {
         $user = auth()->user();
 

@@ -10,6 +10,13 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
+    /**
+     * Return products that somehow match the search query if any.
+     * Else return all products.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function index(Request $request): JsonResponse
     {
         $query = Product::query();
@@ -23,9 +30,16 @@ class ProductController extends Controller
         }
 
         $products = $query->get();
+
         return response()->json($products)->setStatusCode(200);
     }
 
+    /**
+     * Return products that belong to a specific category.
+     *
+     * @param $categoryId
+     * @return JsonResponse
+     */
     public function getByCategory($categoryId): JsonResponse
     {
         if(!Category::find($categoryId)) {
@@ -36,9 +50,16 @@ class ProductController extends Controller
         }
 
         $products = Product::where('category_id', $categoryId)->get();
+
         return response()->json($products)->setStatusCode(200);
     }
 
+    /**
+     * Return a specific product.
+     *
+     * @param $productId
+     * @return JsonResponse
+     */
     public function getById($productId): JsonResponse
     {
         $product = Product::find($productId);
@@ -49,9 +70,16 @@ class ProductController extends Controller
                 'error' => 'Searched product does not exist'],
                 404);
         }
+
         return response()->json($product)->setStatusCode(200);
     }
 
+    /**
+     * Create a new product.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function store(Request $request): JsonResponse
     {
         $request->validate([

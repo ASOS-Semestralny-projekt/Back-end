@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('order_number');
             $table->timestamp('order_date_created');
-            $table->decimal('total_price', 8, 2);
+            $table->decimal('total_price');
             $table->timestamps();
         });
     }
