@@ -53,7 +53,6 @@ class UserController extends Controller
                 'city' => 'string',
                 'zip_code' => 'string',
                 'country' => 'string',
-                'email' => 'email',
                 'phone' => 'string',
             ]);
             $user->update(request()->all());
