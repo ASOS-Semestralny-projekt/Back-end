@@ -12,15 +12,6 @@ class OrderController extends Controller
 {
     public function placeOrder(Request $request)
     {
-        $user = auth()->user();
-
-        if (!$user) {
-            return response()->json([
-                'message' => 'Order failed',
-                'errors' => 'User not logged in'
-            ])->setStatusCode(401);
-        }
-
         try {
             $totalPrice = $request->input('total_price');
 
