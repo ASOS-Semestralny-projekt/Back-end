@@ -17,6 +17,17 @@ class ValidOrder implements ValidationRule
         $this->totalPrice = $totalPrice;
     }
 
+    /**
+     * Determine if the validation rule passes.
+     * Is used for oder validation.
+     *
+     * @param string $attribute
+     * @param mixed $value
+     * @param Closure $fail
+     * @return void
+     *
+     * @throws ValidationException
+     */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         foreach ($value as $product) {
@@ -27,13 +38,14 @@ class ValidOrder implements ValidationRule
             }
 
             $productId = $product['id'];
-            $productModel = Product::find($productId);
 
-            if (!$productModel) {
+            if (!Product::find($productId)) {
                 throw ValidationException::withMessages([
                     $attribute => 'The product does not exist.'
                 ])->status(409);
             }
+
+            $productModel = Product::find($productId);
 
             if ($productModel->price != $product['price']) {
                 throw ValidationException::withMessages([
@@ -47,11 +59,18 @@ class ValidOrder implements ValidationRule
                 ])->status(409);
             }
     }
-
         $this->validateTotalPrice($value);
     }
 
-    protected function validateTotalPrice($value): void
+    /**
+     * Validate the total price of the order.
+     * Sum of the prices of the products in the order must match the total price.
+     *
+     * @param array $value
+     * @return void
+     *@throws ValidationException
+     */
+    protected function validateTotalPrice(array $value): void
     {
         $sumOfPrices = array_reduce($value, function ($sum, $product) {
             return $sum + ($product['price'] * $product['quantity']);

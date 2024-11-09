@@ -48,9 +48,4 @@ class Product extends Model
     {
         return $this->belongsToMany(Order::class)->withPivot('quantity', 'price');
     }
-
-    public static function truncate()
-    {
-        return static::query()->delete();
-    }
 }
