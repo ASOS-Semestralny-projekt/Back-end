@@ -46,6 +46,11 @@ class User extends Authenticatable
         'email'
     ];
 
+    public static function truncate()
+    {
+        return static::query()->delete();
+    }
+
     /**
      * Get the attributes that should be cast.
      *

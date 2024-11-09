@@ -29,4 +29,9 @@ class Category extends Model
     {
         return static::query()->find($categoryId);
     }
+
+    public static function truncate()
+    {
+        return static::query()->delete();
+    }
 }

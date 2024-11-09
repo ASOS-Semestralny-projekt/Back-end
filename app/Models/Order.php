@@ -19,6 +19,11 @@ class Order extends Model
         'total_price',
     ];
 
+    public static function truncate()
+    {
+        return static::query()->delete();
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
