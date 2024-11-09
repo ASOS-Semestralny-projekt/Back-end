@@ -57,14 +57,7 @@ class OrderController extends Controller
     {
         $user = auth()->user();
 
-        if (!$user) {
-            return response()->json([
-                'message' => 'Data retrieval failed',
-                'errors' => 'User not logged in'
-            ])->setStatusCode(401);
-        }
-
-        $orders = auth()->user()->orders()->with('products')->get();
+        $orders = $user->orders()->with('products')->get();
 
         return response()->json($orders->map(function ($order) {
             return [
