@@ -22,12 +22,6 @@ class UserController extends Controller
     {
         $user = auth()->user();
 
-        if (!$user) {
-            return response()->json([
-                'message' => 'Please log in'
-            ])->setStatusCode(401);
-        }
-
         return response()->json([
             'user' => $user
         ])->setStatusCode(200);
@@ -37,12 +31,6 @@ class UserController extends Controller
     {
         /** @var User $user */
         $user = auth()->user();
-
-        if (!$user) {
-            return response()->json([
-                'message' => 'Please log in'
-            ])->setStatusCode(401);
-        }
 
         try {
             $validatedData = request()->validate([
@@ -72,12 +60,6 @@ class UserController extends Controller
     {
         /** @var User $user */
         $user = auth()->user();
-
-        if (!$user) {
-            return response()->json([
-                'message' => 'Please log in'
-            ])->setStatusCode(401);
-        }
 
         try {
             $data = request()->validate([
