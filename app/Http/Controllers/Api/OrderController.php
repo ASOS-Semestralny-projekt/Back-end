@@ -27,6 +27,7 @@ class OrderController extends Controller
             $totalPrice = $request->input('total_price');
 
             $data = $request->validate([
+                'customer' => 'required|array',
                 'productsInOrder' => ['required', 'array', new ValidOrder($totalPrice)],
                 'productsInOrder.*.id' => 'required|integer',
                 'productsInOrder.*.quantity' => 'required|integer|min:1',
@@ -48,7 +49,8 @@ class OrderController extends Controller
 
         try {
             $order = Order::create([
-                'user_id' => auth()->id(),
+                'user_id' => auth()->id() ?? null,
+                'customer' => $data['customer'],
                 'order_number' => uniqid(),
                 'order_date_created' => now(),
                 'total_price' => $data['total_price'],

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\DB;
 
 class Order extends Model
 {
@@ -38,6 +39,11 @@ class Order extends Model
         $order->order_date_created = $attributes['order_date_created'];
         $order->total_price = $attributes['total_price'];
         $order->save();
+
+        $customerData = $attributes['customer'];
+        $customerData['order_id'] = $order->id;
+
+        DB::table('order_customer')->insertGetId($customerData);
 
         if (isset($attributes['products'])) {
             foreach ($attributes['products'] as $product) {
