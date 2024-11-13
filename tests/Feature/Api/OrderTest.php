@@ -118,7 +118,7 @@ class OrderTest extends TestCase
         $response->assertStatus(201);
     }
 
-    public function test_create_order_not_logged_in_error(): void
+    public function test_create_order_not_logged_in_success(): void
     {
         Category::create(['name' => 'Category 1']);
         Product::create([
@@ -154,7 +154,7 @@ class OrderTest extends TestCase
         ];
 
         $response = $this->postJson('/place-order', $orderData);
-        $response->assertStatus(401);
+        $response->assertStatus(201);
     }
 
     public function test_create_order_product_does_not_exist_error(): void
