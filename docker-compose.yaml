@@ -1,0 +1,80 @@
+services:
+####################################################################################################
+# app
+####################################################################################################
+  app:
+    build:
+      context: .
+      dockerfile: ./docker/app/Dockerfile
+    image: app
+    container_name: asos-backend
+    restart: unless-stopped
+    environment:
+      VIRTUAL_HOST: laravel.test
+    working_dir: /var/www/
+    depends_on:
+      - db
+    networks:
+      - laravel
+
+####################################################################################################
+# DATABASE (MySQL)
+####################################################################################################
+  db:
+    image: mysql:8.0
+    container_name: asos-mysql
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME}
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - ./docker/mysql/data:/var/lib/mysql
+      - ./docker/mysql/logs:/var/log/mysql
+      #- ./docker/mysql/ql:/docker-entrypoint-initdb.d
+    networks:
+      - laravel
+####################################################################################################
+# Nginx
+####################################################################################################
+  nginx:
+    build:
+      context: .
+      dockerfile: ./docker/nginx/Dockerfile
+    depends_on:
+      - app
+    container_name: asos-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./:/var/www
+      # - ./docker/app/nginx-entrypoint.sh:/usr/local/bin/nginx-entrypoint.sh
+    networks:
+      - laravel
+
+####################################################################################################
+# phpMyAdmin
+####################################################################################################
+  phpmyadmin:
+    image: phpmyadmin:5
+    container_name: asos-phpmyadmin
+    ports:
+        - "8080:80"
+    links:
+        - db
+    restart: unless-stopped
+    environment:
+        PMA_HOST: db
+    networks:
+        - laravel
+
+networks:
+  laravel:
+    driver: bridge

@@ -19,3 +19,5 @@ yarn-error.log
 /.idea
 /.vscode
 /.zed
+/docker/mysql/data/*
+!/docker/mysql/data/
