@@ -3,6 +3,12 @@
 # Exit on error
 set -e
 
+# Wait for mysql to startup before doing migrations
+until nc -z asos-mysql 3306; do
+  echo 'Waiting for MySQL...';
+  sleep 2;
+done;
+
 # Run Laravel database migrations (optional, comment out if not needed)
 echo "Running Laravel migrations..."
 php artisan migrate:refresh --force
