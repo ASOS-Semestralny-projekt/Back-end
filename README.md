@@ -8,6 +8,6 @@
 ## Start app
 - docker compose build
 - docker compose up
-### CAUTION!!! Change port in request
+### CAUTION!!! Changed port in request
 NGINX port was changed to 83 instead of the default 80 because Windows things...  
 example: `localhost:83/products`
