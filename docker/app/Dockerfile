@@ -39,8 +39,11 @@ COPY ./docker/app/app-entrypoint.sh /usr/local/bin/app-entrypoint.sh
 RUN chmod +x /usr/local/bin/app-entrypoint.sh
 
 # Set permissions
-RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache && \
-    chmod -R 775 /var/www/storage /var/www/bootstrap/cache
+RUN chown -R www-data:www-data /var/www/html/public
+RUN chown -R www-data:www-data /var/www/html/storage
+RUN chown -R www-data:www-data /var/www/html/bootstrap/cache
+RUN chmod -R 775 /var/www/html/storage
+RUN chmod -R 775 /var/www/html/bootstrap/cache
 
 
 # Expose port 9000
