@@ -6,7 +6,7 @@ set -e
 # Run Laravel database migrations (optional, comment out if not needed)
 echo "Running Laravel migrations..."
 php artisan migrate --force
-
+php artisan db:seed
 # Clear and cache configurations
 echo "Caching Laravel configurations..."
 php artisan config:cache
