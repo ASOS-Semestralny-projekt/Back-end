@@ -6,30 +6,18 @@ use App\Models\Category;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class OrderTest extends TestCase
 {
-    private function refreshForTests(): void
-    {
-        Product::truncate();
-        Category::truncate();
-        User::truncate();
-        Order::truncate();
-        DB::statement('ALTER TABLE categories AUTO_INCREMENT = 1');
-        DB::statement('ALTER TABLE products AUTO_INCREMENT = 1');
-    }
 
-    /**
-     * Get sample user data.
-     *
-     * @param array $overrides
-     * @return array
-     */
-    private function getUserData(array $overrides = []): array
+    use RefreshDatabase;
+
+    private function registerUser() : void
     {
-        return array_merge([
+        $this->postJson('/register', [
             'first_name' => 'Jožko',
             'last_name' => 'Mrkvička',
             'street' => 'Ilkovičova',
@@ -39,59 +27,34 @@ class OrderTest extends TestCase
             'country' => 'Slovensko',
             'email' => 'example@example.com',
             'phone' => '421914567890',
-            'password' => 'password',
-        ], $overrides);
+            'password' => 'password']);
     }
 
-    /**
-     * Register a user.
-     *
-     * @param array $overrides
-     * @return \Illuminate\Testing\TestResponse
-     */
-    private function registerUser(array $overrides = [])
-    {
-        return $this->postJson('/register', $this->getUserData($overrides));
-    }
-
-    /**
-     * Test get orders list success.
-     */
     public function test_get_orders_list_success(): void
     {
-        $this->refreshForTests();
         $this->registerUser();
 
         $response = $this->getJson('/orders');
         $response->assertStatus(200);
+        $response->assertJson([]);
     }
 
-    /**
-     * Test get orders list failure (not logged in).
-     */
     public function test_get_orders_list_not_logged_in_error(): void
     {
-        $this->refreshForTests();
         $response = $this->getJson('/orders');
         $response->assertStatus(401);
     }
 
     public function test_create_order_success(): void
     {
-        $this->refreshForTests();
         $this->registerUser();
 
-        Category::create(['name' => 'Category 1']);
-        Product::create([
-            'name' => 'Product 1',
-            'category_id' => 1,
-            'category_name' => 'Category 1',
-            'short_description' => 'Product 1 description',
-            'long_description' => 'Product 1 description',
-            'price' => 10.99,
-            'stock' => 23
+        $category = Category::factory()->create();
+        $product = Product::factory()->create([
+            'category_id' => $category->id,
+            'category_name' => $category->name,
+            'price' => 10.99
         ]);
-
         $orderData = [
             'customer' => [
                 'first_name' => 'Jožko',
@@ -106,12 +69,12 @@ class OrderTest extends TestCase
             ],
             'productsInOrder' => [
                 [
-                    'id' => 1,
+                    'id' => $product->id,
                     'quantity' => 1,
-                    'price' => 10.99
+                    'price' => $product->price
                 ]
             ],
-            'total_price' => 10.99
+            'total_price' => $product->price
         ];
 
         $response = $this->postJson('/place-order', $orderData);
@@ -120,17 +83,12 @@ class OrderTest extends TestCase
 
     public function test_create_order_not_logged_in_success(): void
     {
-        Category::create(['name' => 'Category 1']);
-        Product::create([
-            'name' => 'Product 1',
-            'category_id' => 1,
-            'category_name' => 'Category 1',
-            'short_description' => 'Product 1 description',
-            'long_description' => 'Product 1 description',
-            'price' => 10.99,
-            'stock' => 23
+        $category = Category::factory()->create();
+        $product = Product::factory()->create([
+            'category_id' => $category->id,
+            'category_name' => $category->name,
+            'price' => 10.99
         ]);
-
         $orderData = [
             'customer' => [
                 'first_name' => 'Jožko',
@@ -145,12 +103,12 @@ class OrderTest extends TestCase
             ],
             'productsInOrder' => [
                 [
-                    'id' => 1,
+                    'id' => $product->id,
                     'quantity' => 1,
-                    'price' => 10.99
+                    'price' => $product->price
                 ]
             ],
-            'total_price' => 10.99
+            'total_price' => $product->price
         ];
 
         $response = $this->postJson('/place-order', $orderData);
@@ -159,10 +117,7 @@ class OrderTest extends TestCase
 
     public function test_create_order_product_does_not_exist_error(): void
     {
-        $this->refreshForTests();
         $this->registerUser();
-
-        Category::create(['name' => 'Category 1']);
 
         $orderData = [
             'customer' => [
@@ -192,18 +147,13 @@ class OrderTest extends TestCase
 
     public function test_create_order_product_price_not_correct_error(): void
     {
-        $this->refreshForTests();
         $this->registerUser();
 
-        Category::create(['name' => 'Category 1']);
-        Product::create([
-            'name' => 'Product 1',
-            'category_id' => 1,
-            'category_name' => 'Category 1',
-            'short_description' => 'Product 1 description',
-            'long_description' => 'Product 1 description',
-            'price' => 5.99,
-            'stock' => 23
+        $category = Category::factory()->create();
+        $product = Product::factory()->create([
+            'category_id' => $category->id,
+            'category_name' => $category->name,
+            'price' => 10.99
         ]);
 
         $orderData = [
@@ -220,12 +170,12 @@ class OrderTest extends TestCase
             ],
             'productsInOrder' => [
                 [
-                    'id' => 1,
+                    'id' => $product->id,
                     'quantity' => 1,
-                    'price' => 10.99
+                    'price' => $product->price
                 ]
             ],
-            'total_price' => 15.99
+            'total_price' => $product->price + 1
         ];
 
         $response = $this->postJson('/place-order', $orderData);
