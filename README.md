@@ -1,4 +1,8 @@
-# How to run project
+# About
+This repository provides a back-end service for e-shop written in PHP framework Laravel.  
+Further documentation about endpoints can be viewd on this link
+
+# How to run Back-end
 ## Clone repo
 `git clone https://github.com/ASOS-Semestralny-projekt/Back-end.git`
 ## Create .env
@@ -11,3 +15,4 @@
 ### CAUTION!!! Changed port in request
 NGINX port was changed to 83 instead of the default 80 because Windows things...  
 example: `localhost:83/products`
+
