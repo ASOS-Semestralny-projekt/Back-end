@@ -1,0 +1,44 @@
+config:
+  target: 'http://localhost:8000'
+  plugins:
+     fake-data: {}
+  phases:
+    - duration: 60
+      arrivalRate: 10
+scenarios:
+  - flow:
+      - post:
+          url: "/register"
+          json:
+            first_name: "Jožko"
+            last_name: "Mrkvička"
+            street: "Ilkovičova"
+            house_number: "11B"
+            city: "Bratislava"
+            zip_code: "82103"
+            country: "Slovensko"
+            phone: "421914567890"
+            email: "{{ $randEmail() }}"  # Unique email for each VUser
+            password: "password"
+      - get:
+          url: "/products"
+      - get:
+          url: "/products/4"
+      - get:
+          url: "/logout"
+      - get:
+          url: "/categories"
+  - flow:
+      - get:
+          url: "/products"
+      - get:
+          url: "/products/1"
+  - flow:
+      - get:
+          url: "/categories"
+  - flow:
+      - get:
+          url: "/products/1"
+  - flow:
+      - get:
+          url: "/product/1"
