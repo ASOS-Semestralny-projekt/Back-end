@@ -6,6 +6,7 @@ Further documentation about endpoints can be viewd on [this](https://app.swagger
 ## Clone repo
 `git clone https://github.com/ASOS-Semestralny-projekt/Back-end.git`
 ## Create .env
+Go to the Back-end folder `cd Back-end`
 - Linux/MacOS: `cp .env.example .env`
 - Windows Command Prompt: `copy .env.example .env`
 - Windows Powershell: `Copy-Item .env.example .env`
