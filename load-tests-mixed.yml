@@ -1,0 +1,91 @@
+config:
+  target: 'http://localhost:8000'
+  plugins:
+     fake-data: {}
+     apdex: {}
+     metrics-by-endpoint: {}
+  apdex:
+    threshold: 100
+  phases:
+    - duration: 60
+      arrivalRate: 1
+      rampTo: 5
+      name: Warm up phase
+    - duration: 60
+      arrivalRate: 5
+      rampTo: 10
+      name: Ramp up load
+    - duration: 30
+      arrivalRate: 10
+      rampTo: 30
+      name: Spike phase
+scenarios:
+  - flow:
+      - post:
+          url: "/register"
+          json:
+            first_name: "Jožko"
+            last_name: "Mrkvička"
+            street: "Ilkovičova"
+            house_number: "11B"
+            city: "Bratislava"
+            zip_code: "82103"
+            country: "Slovensko"
+            phone: "421914567890"
+            email: "{{ $randEmail() }}"  # Unique email for each VUser
+            password: "password"
+      - get:
+          url: "/orders"
+      - get:
+          url: "/logout"
+      - get:
+          url: "/orders"
+      - get:
+          url: "/logout"
+  - flow:
+      - post:
+          url: "/place-order"
+          json:
+            customer:
+              first_name: "Jožko"
+              last_name: "Mrkvička"
+              street: "Ilkovičova"
+              house_number: "11B"
+              city: "Bratislava"
+              zip_code: "82103"
+              country: "Slovensko"
+              email: "example@example.com"
+              phone: "421914567890"
+            productsInOrder:
+              - id: 2
+                quantity: 333
+                price: 299.90
+            total_price: 299.90
+  - flow:
+      - post:
+          url: "/place-order"
+          json:
+            customer:
+              first_name: "Jožko"
+              last_name: "Mrkvička"
+              street: "Ilkovičova"
+              house_number: "11B"
+              city: "Bratislava"
+              zip_code: "82103"
+              country: "Slovensko"
+              email: "example@example.com"
+              phone: "421914567890"
+            productsInOrder:
+              - id: 15
+                quantity: 1
+                price: 299.90
+            total_price: 299.90
+  - flow:
+      - get:
+          url: "/products/2"
+      - get:
+          url: "/products/560"
+      - get:
+          url: "/product/154"
+      - get:
+          url: "/product/5"
