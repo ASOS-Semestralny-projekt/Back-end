@@ -1,0 +1,60 @@
+config:
+  target: 'http://localhost:8000'
+  plugins:
+     fake-data: {}
+     apdex: {}
+     metrics-by-endpoint: {}
+  apdex:
+    threshold: 100
+  phases:
+    - duration: 60
+      arrivalRate: 1
+      rampTo: 5
+      name: Warm up phase
+    - duration: 60
+      arrivalRate: 5
+      rampTo: 10
+      name: Ramp up load
+    - duration: 30
+      arrivalRate: 10
+      rampTo: 30
+      name: Spike phase
+scenarios:
+  - flow:
+      - post:
+          url: "/register"
+          json:
+            first_name: "Jožko"
+            last_name: "Mrkvička"
+            street: "Ilkovičova"
+            house_number: "11B"
+            city: "Bratislava"
+            zip_code: "82103"
+            country: "Slovensko"
+            phone: "421914567890"
+            email: "{{ $randEmail() }}"  # Unique email for each VUser
+            password: "password"
+      - get:
+          url: "/products"
+      - get:
+          url: "/products/1"
+      - get:
+          url: "/orders"
+      - get:
+          url: "/logout"
+      - get:
+          url: "/categories"
+  - flow:
+      - get:
+          url: "/products"
+      - get:
+          url: "/products/1"
+      - get:
+          url: "/categories"
+  - flow:
+        - get:
+            url: "/products"
+        - get:
+            url: "/products/2"
+        - get:
+            url: "/categories"
