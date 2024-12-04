@@ -19,6 +19,7 @@ class UserTest extends TestCase
 
         $this->assertInstanceOf(User::class, $user);
         $this->assertEquals('test@example.com', $user->email);
+        $this->assertDatabaseHas('users', ['email' => 'test@example.com']);
     }
 
     /**

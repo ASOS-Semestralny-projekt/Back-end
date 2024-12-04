@@ -19,6 +19,7 @@ class CategoryTest extends TestCase
 
         $this->assertInstanceOf(Category::class, $category);
         $this->assertEquals('Electronics', $category->name);
+        $this->assertDatabaseHas('categories', ['name' => 'Electronics']);
     }
 
     /**
