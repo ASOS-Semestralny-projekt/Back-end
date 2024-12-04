@@ -22,6 +22,18 @@ class CategoryTest extends TestCase
     }
 
     /**
+     * Test creating a category, mock.
+     */
+    public function test_create_product_mock()
+    {
+        $category = $this->createMock(Category::class);
+        $category->method('save')
+            ->willReturn(true);
+
+        $this->assertTrue($category->save());
+    }
+
+    /**
      * Test finding a category by ID.
      */
     public function test_find_category_by_id(): void

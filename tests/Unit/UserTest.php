@@ -22,6 +22,18 @@ class UserTest extends TestCase
     }
 
     /**
+     * Test creating a category, mock.
+     */
+    public function test_create_product_mock()
+    {
+        $user = $this->createMock(User::class);
+        $user->method('save')
+            ->willReturn(true);
+
+        $this->assertTrue($user->save());
+    }
+
+    /**
      * Test finding a user by ID.
      */
     public function test_find_user_by_id(): void
