@@ -25,6 +25,8 @@ scenarios:
       - get:
           url: "/products/4"
       - get:
+          url: "/orders"
+      - get:
           url: "/logout"
       - get:
           url: "/categories"
@@ -33,12 +35,12 @@ scenarios:
           url: "/products"
       - get:
           url: "/products/1"
-  - flow:
       - get:
           url: "/categories"
   - flow:
-      - get:
-          url: "/products/1"
-  - flow:
-      - get:
-          url: "/product/1"
+        - get:
+            url: "/products"
+        - get:
+            url: "/products/2"
+        - get:
+            url: "/categories"
