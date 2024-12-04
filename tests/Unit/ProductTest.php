@@ -25,6 +25,18 @@ class ProductTest extends TestCase
     }
 
     /**
+     * Test creating a product, mock.
+     */
+    public function test_create_product_mock()
+    {
+        $product = $this->createMock(Product::class);
+        $product->method('save')
+            ->willReturn(true);
+
+        $this->assertTrue($product->save());
+    }
+
+    /**
      * Test finding a product by its ID.
      */
     public function test_find_product_by_id(): void

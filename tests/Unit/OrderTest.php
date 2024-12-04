@@ -54,6 +54,18 @@ class OrderTest extends TestCase
     }
 
     /**
+     * Test creating an order, mock.
+     */
+    public function test_create_order_mock(): void
+    {
+        $order = $this->createMock(Order::class);
+        $order->method('save')
+            ->willReturn(true);
+
+        $this->assertTrue($order->save());
+    }
+
+    /**
      * Test creating an order with multiple products.
      */
     public function test_create_order_with_multiple_products(): void
