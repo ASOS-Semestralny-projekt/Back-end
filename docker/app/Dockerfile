@@ -11,7 +11,9 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     libxml2-dev \
     netcat-openbsd \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+    && curl -sL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 
 
@@ -33,6 +35,9 @@ COPY . .
 RUN composer install
 # Clear cache and generate key
 RUN php artisan key:generate
+
+RUN npm install -g artillery
+
 
 # Copy entrypoint script
 COPY ./docker/app/app-entrypoint.sh /usr/local/bin/app-entrypoint.sh
